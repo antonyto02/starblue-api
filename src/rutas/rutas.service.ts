@@ -97,20 +97,23 @@ export class RutasService {
     const mxParadas  = sorted.filter(p => p.destino?.pais !== 'USA');
     const usaParadas = sorted.filter(p => p.destino?.pais === 'USA');
 
-    if (mxParadas.length === 0 || usaParadas.length === 0) return;
+    if (usaParadas.length === 0) return;
 
     const tarifas: RutaTarifa[] = [];
 
-    for (const usaParada of usaParadas) {
-      // Find the price for this USA stop from the DTO (matched by orden)
-      const dto = paradasDto.find(p => p.orden === usaParada.orden);
+    // Si no hay paradas MX, usar la primera parada como origen (rutas solo USA)
+    const origenes = mxParadas.length > 0 ? mxParadas : [sorted[0]];
+    const destinos = mxParadas.length > 0 ? usaParadas : sorted.slice(1);
+
+    for (const destParada of destinos) {
+      const dto = paradasDto.find(p => p.orden === destParada.orden);
       if (!dto?.precioUSD) continue;
 
-      for (const mxParada of mxParadas) {
+      for (const origen of origenes) {
         tarifas.push(this.tarifasRepo.create({
           rutaId,
-          paradaOrigenId:  mxParada.id,
-          paradaDestinoId: usaParada.id,
+          paradaOrigenId:  origen.id,
+          paradaDestinoId: destParada.id,
           precioUSD:       dto.precioUSD,
         }));
       }
