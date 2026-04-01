@@ -56,8 +56,9 @@ export class RutasService {
       paradas: dto.paradas.map((p) => this.paradasRepo.create({ destinoId: p.destinoId, orden: p.orden })),
     });
     const saved = await this.rutasRepo.save(ruta);
-    await this.generarTarifas(saved.id, saved.paradas, dto.paradas);
-    return saved;
+    const reloaded = await this.rutasRepo.findOne({ where: { id: saved.id } });
+    await this.generarTarifas(saved.id, reloaded!.paradas, dto.paradas);
+    return reloaded!;
   }
 
   async actualizar(id: string, dto: Partial<CrearRutaDto>) {
@@ -77,8 +78,9 @@ export class RutasService {
       ruta.tarifas = [];
 
       const saved = await this.rutasRepo.save(ruta);
-      await this.generarTarifas(saved.id, saved.paradas, dto.paradas);
-      return saved;
+      const reloaded = await this.rutasRepo.findOne({ where: { id: saved.id } });
+      await this.generarTarifas(saved.id, reloaded!.paradas, dto.paradas);
+      return reloaded!;
     }
 
     return this.rutasRepo.save(ruta);
