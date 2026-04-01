@@ -68,4 +68,15 @@ export class RutasController {
   findTarifas(@Param('rutaId') rutaId: string) {
     return this.rutasService.findTarifas(rutaId);
   }
+
+  // Tarifas desde una parada origen (empleado + admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.COMISIONISTA, Role.ADMIN)
+  @Get(':rutaId/tarifas/desde/:paradaOrigenId')
+  findTarifasDesde(
+    @Param('rutaId') rutaId: string,
+    @Param('paradaOrigenId') paradaOrigenId: string,
+  ) {
+    return this.rutasService.findTarifasDesde(rutaId, paradaOrigenId);
+  }
 }

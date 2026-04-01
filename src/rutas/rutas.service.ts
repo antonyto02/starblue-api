@@ -141,4 +141,9 @@ export class RutasService {
     await this.findOne(rutaId);
     return this.tarifasRepo.find({ where: { rutaId } });
   }
+
+  async findTarifasDesde(rutaId: string, paradaOrigenId: string) {
+    await this.findOne(rutaId);
+    return this.tarifasRepo.find({ where: { rutaId, paradaOrigenId } });
+  }
 }
